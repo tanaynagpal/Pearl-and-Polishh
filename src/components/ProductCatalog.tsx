@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { api } from '../services/api';
 import { NailProduct, ProductCategory, PressOnShape } from '../types';
 import { buildWhatsAppUrl } from '../data/products';
-import { getStoredProducts } from '../data/storage';
 import { MessageCircle, Search, Filter, Sparkles, Info, Star, Share2 } from 'lucide-react';
 import { ShareProductModal } from './ShareProductModal';
 
@@ -21,7 +21,19 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   const [selectedProductLength, setSelectedProductLength] = useState<{ [key: string]: string }>({});
   const [sharingProduct, setSharingProduct] = useState<NailProduct | null>(null);
 
-  const productsList = getStoredProducts();
+  const [productsList, setProductsList] = useState<NailProduct[]>([]);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.getProducts();
+        setProductsList(res.products || []);
+      } catch (err) {
+        console.error("Failed to load products:", err);
+      }
+    };
+  
+    fetchProducts();
+  }, []);
   const categories = ['All', 'Press-Ons', '3D Art', 'Bridal', 'Chrome', 'Gel Extensions', 'Gel Polish'];
 
   const filteredProducts = productsList.filter((product) => {

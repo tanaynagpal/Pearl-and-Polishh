@@ -28,77 +28,7 @@ export interface MemoryStoreData {
   settings: any;
 }
 
-const INITIAL_PRODUCTS = [
-  {
-    id: 'pp-01',
-    title: 'Maroon Velvet Rose & Freshwater Pearls',
-    price: 1850,
-    description: 'Handcrafted luxury press-on set in deep royal maroon velvet finish with hand-sculpted 3D rose petals, miniature freshwater pearls, and 24k gold leaf filigree accents.',
-    shape: 'Medium Almond',
-    length: 'Medium',
-    size: 'Custom',
-    images: ['https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&q=80&w=1000'],
-    tag: 'Bestseller',
-    category: '3D Art',
-    rating: 5.0,
-    ratingCount: 48,
-    featured: true,
-    hidden: false,
-    instagramLink: 'https://www.instagram.com/pearl.and.polishh',
-  },
-  {
-    id: 'pp-02',
-    title: 'Vibrant Magenta Chrome & Glazed Aurora',
-    price: 1450,
-    description: 'Electric vibrant magenta glazed chrome over a crisp micro-French outline. Shifts brilliantly from rich magenta to gold under light.',
-    shape: 'Medium Almond',
-    length: 'Short',
-    size: 'Custom',
-    images: ['https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&q=80&w=1000'],
-    tag: 'Chrome Glaze',
-    category: 'Chrome',
-    rating: 4.9,
-    ratingCount: 41,
-    featured: true,
-    hidden: false,
-    instagramLink: 'https://www.instagram.com/pearl.and.polishh',
-  },
-  {
-    id: 'pp-03',
-    title: 'Deep Ruby Wine Cat-Eye Shimmer',
-    price: 1650,
-    description: 'Magnetically aligned velvet cat-eye in rich wine burgundy tone, shifting with every gesture. Accentuated with subtle Swarovski crystal dusting.',
-    shape: 'Long Coffin',
-    length: 'Long',
-    size: 'Custom',
-    images: ['https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&q=80&w=1000'],
-    tag: 'Magnetic Cat-Eye',
-    category: 'Cat Eye',
-    rating: 5.0,
-    ratingCount: 36,
-    featured: true,
-    hidden: false,
-    instagramLink: 'https://www.instagram.com/pearl.and.polishh',
-  },
-  {
-    id: 'pp-04',
-    title: 'Bridal Solitaire & French Lace Embroidery',
-    price: 2450,
-    description: 'Exquisite wedding press-on set featuring hand-drawn French lace motifs, clear crystal droplets, and 3D pearl clusters tailored for brides.',
-    shape: 'Medium Almond',
-    length: 'Medium',
-    size: 'Custom',
-    images: ['https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1000'],
-    tag: 'Bridal Couture',
-    category: 'Bridal',
-    rating: 5.0,
-    ratingCount: 52,
-    featured: true,
-    hidden: false,
-    instagramLink: 'https://www.instagram.com/pearl.and.polishh',
-  },
-];
-
+import { INITIAL_PRODUCTS } from '../../src/data/products';
 const INITIAL_SETTINGS = {
   studioName: 'Pearl & Polishh',
   tagline: 'LUDHIANA LUXURY ATELIER & CUSTOM GEL PRESS-ON STUDIO',
@@ -156,22 +86,16 @@ export class Store {
    * Seed database strictly in DEVELOPMENT environment. Never seeds in production.
    */
   public static async initSeed() {
-    const isProd = process.env.NODE_ENV === 'production';
-    if (isProd) {
-      console.log('[SEED] Production environment detected. Skipping initial seed routines.');
-      return;
-    }
-
     if (isMongoConnected()) {
       try {
-        // 1. Seed Admin User if missing
-        const adminExists = await (UserModel as any).findOne({
+        // Seed Admin
+        const adminExists = await UserModel.findOne({
           email: INITIAL_ADMIN.email.toLowerCase(),
           isDeleted: { $ne: true },
-        }).exec();
-
+        });
+  
         if (!adminExists) {
-          await (UserModel as any).create({
+          await UserModel.create({
             name: INITIAL_ADMIN.name,
             email: INITIAL_ADMIN.email.toLowerCase(),
             passwordHash: INITIAL_ADMIN.passwordHash,
@@ -179,56 +103,29 @@ export class Store {
             phone: INITIAL_ADMIN.phone,
             isVerified: true,
           });
-          console.log('[SEED] Initial admin user seeded into MongoDB.');
         }
-
-        // 2. Seed Initial Products if database is empty
-        const prodCount = await (ProductModel as any).countDocuments({ isDeleted: { $ne: true } });
+  
+        // Seed Products ONLY if DB is empty
+        const prodCount = await ProductModel.countDocuments({
+          isDeleted: { $ne: true },
+        });
+  
         if (prodCount === 0) {
-          await (ProductModel as any).insertMany(INITIAL_PRODUCTS);
-          console.log('[SEED] Initial products seeded into MongoDB.');
+          await ProductModel.insertMany(INITIAL_PRODUCTS);
         }
-
-        // 3. Seed Studio Settings if missing
-        const settingsCount = await (StudioSettingsModel as any).countDocuments();
+  
+        // Seed Settings
+        const settingsCount = await StudioSettingsModel.countDocuments();
+  
         if (settingsCount === 0) {
-          await (StudioSettingsModel as any).create(INITIAL_SETTINGS);
-          console.log('[SEED] Initial studio settings seeded into MongoDB.');
+          await StudioSettingsModel.create(INITIAL_SETTINGS);
         }
-      } catch (err: any) {
-        console.error('[SEED ERROR] Failed to run MongoDB dev seed:', err.message);
-      }
-    } else {
-      // Local dev JSON fallback seed
-      const data = this.readJSON();
-      let changed = false;
-      if (!data.users || data.users.length === 0) {
-        data.users = [INITIAL_ADMIN];
-        changed = true;
-      } else {
-        const adminIndex = data.users.findIndex(
-          (u) => u.email.toLowerCase() === INITIAL_ADMIN.email.toLowerCase()
-        );
-        if (adminIndex === -1) {
-          data.users.push(INITIAL_ADMIN);
-          changed = true;
-        } else {
-          data.users[adminIndex].role = 'admin';
-        }
-      }
-      if (!data.products || data.products.length === 0) {
-        data.products = INITIAL_PRODUCTS;
-        changed = true;
-      }
-      if (!data.settings) {
-        data.settings = INITIAL_SETTINGS;
-        changed = true;
-      }
-      if (changed) {
-        this.writeJSON(data);
+      } catch (err) {
+        console.error(err);
       }
     }
   }
+
 
   // ============================================================================
   // USER OPERATIONS
