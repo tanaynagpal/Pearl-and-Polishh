@@ -1,0 +1,6 @@
+{
+  "name": "Pearl & Polishh",
+  "description": "Nail art studio and custom press-on nail boutique with direct WhatsApp booking and custom configurator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

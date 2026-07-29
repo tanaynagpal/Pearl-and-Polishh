@@ -1,0 +1,21 @@
+{
+  "name": "Pearl & Polishh Atelier | Luxury Press-Ons & Salon",
+  "short_name": "Pearl&Polishh",
+  "description": "Bespoke luxury press-on nails, custom sizing, and private nail studio appointments.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF3F6",
+  "theme_color": "#2D040E",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>Pearl & Polishh Atelier | Luxury Press-On Nails & Salon Studio</title>
+    <meta name="title" content="Pearl & Polishh Atelier | Luxury Press-On Nails & Salon Studio" />
+    <meta name="description" content="Discover handcrafted luxury press-on nails, custom 3D art, salon nail appointments, and bespoke size configuration at Pearl & Polishh Atelier." />
+    <meta name="keywords" content="luxury press-on nails, custom nails, press-on salon, 3D nail art, nail studio, gel extensions, custom sizing nails" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Pearl & Polishh Atelier" />
+    <meta name="theme-color" content="#2D040E" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://pearlandpolish.com/" />
+    
+    <!-- Favicon & Web Application Manifest -->
+    <link rel="icon" type="image/jpeg" href="/logo.jpg" />
+    <link rel="apple-touch-icon" href="/logo.jpg" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pearlandpolish.com/" />
+    <meta property="og:title" content="Pearl & Polishh Atelier | Luxury Press-On Nails & Salon Studio" />
+    <meta property="og:description" content="Handcrafted bespoke luxury press-on nails and private nail studio appointment bookings." />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80" />
+    <meta property="og:site_name" content="Pearl & Polishh Atelier" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://pearlandpolish.com/" />
+    <meta name="twitter:title" content="Pearl & Polishh Atelier | Luxury Press-On Nails & Salon Studio" />
+    <meta name="twitter:description" content="Handcrafted bespoke luxury press-on nails and private nail studio appointment bookings." />
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80" />
+
+    <!-- Performance & Font Optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Structured Data (JSON-LD) for Local Business & E-Commerce -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "NailSalon",
+      "name": "Pearl & Polishh Atelier",
+      "image": "https://pearlandpolish.com/logo.jpg",
+      "@id": "https://pearlandpolish.com",
+      "url": "https://pearlandpolish.com",
+      "telephone": "+1-555-019-2831",
+      "priceRange": "$$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "742 Evergreen Atelier Suite 402",
+        "addressLocality": "Beverly Hills",
+        "addressRegion": "CA",
+        "postalCode": "90210",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 34.0736,
+        "longitude": -118.4004
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "10:00",
+          "closes": "19:00"
+        },
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": "Saturday",
+          "opens": "10:00",
+          "closes": "18:00"
+        }
+      ],
+      "sameAs": [
+        "https://instagram.com/pearlandpolishh",
+        "https://facebook.com/pearlandpolishh"
+      ]
+    }
+    </script>
+
+    <!-- Optional Analytics Integration Scripts (Disabled until environment variables configured) -->
+    <script>
+      (function() {
+        // Google Analytics (GTAG)
+        var gaId = "%VITE_GA_MEASUREMENT_ID%";
+        if (gaId && !gaId.startsWith("%")) {
+          var script = document.createElement("script");
+          script.async = true;
+          script.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+          document.head.appendChild(script);
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        }
+
+        // Microsoft Clarity
+        var clarityId = "%VITE_CLARITY_ID%";
+        if (clarityId && !clarityId.startsWith("%")) {
+          (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+          })(window, document, "clarity", "script", clarityId);
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-[#FFF3F6] text-[#420614] font-sans antialiased selection:bg-[#E91E63]/20 selection:text-[#420614]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

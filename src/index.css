@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --maroon-dark: #420614;
+    --maroon-main: #600A20;
+    --maroon-light: #800E2B;
+    --pink-vibrant: #D81B60;
+    --pink-hot: #E91E63;
+    --pink-soft: #FCE4EC;
+    --pink-bg: #FFF3F6;
+    --gold-accent: #D4AF37;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 110px;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #C2185B #FFF3F6;
+  }
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* Custom overlay scrollbar in rich maroon & pink */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(194, 24, 91, 0.6);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #600A20;
+}
+
+/* Radiant Maroon to Vibrant Rose gradient background utility */
+.bg-vibrant-maroon {
+  background: linear-gradient(135deg, #420614 0%, #600A20 50%, #800E2B 100%);
+}
+
+.bg-vibrant-pink-gradient {
+  background: linear-gradient(135deg, #800E2B 0%, #C2185B 50%, #E91E63 100%);
+}
+
+.bg-vibrant-rose-glow {
+  background: radial-gradient(circle at top right, rgba(233, 30, 99, 0.15), rgba(96, 10, 32, 0.05));
+}
+
+
