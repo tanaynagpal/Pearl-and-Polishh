@@ -55,7 +55,7 @@ async function startServer() {
   validateEnvironmentVariables();
 
   const app = express();
-  const PORT = 3000;
+  const PORT = Number(process.env.PORT) || 3000;
   const isProduction = process.env.NODE_ENV === 'production';
 
   // Disable 'X-Powered-By' header to prevent tech stack fingerprinting
