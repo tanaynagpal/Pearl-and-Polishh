@@ -111,7 +111,26 @@ export class Store {
         });
   
         if (prodCount === 0) {
-          await ProductModel.insertMany(INITIAL_PRODUCTS);
+          await ProductModel.insertMany(
+            INITIAL_PRODUCTS.map((p) => ({
+              title: p.title,
+              price: p.price,
+              description: p.description,
+          
+              // Convert frontend model -> Mongo model
+              images: [p.image],
+          
+              shape: p.shapeOptions?.[0] ?? "Medium Almond",
+              length: p.lengthOptions?.[0] ?? "Medium",
+              size: "Standard",
+          
+              category: p.category,
+              rating: p.rating,
+              ratingCount: p.reviewCount,
+              featured: p.isBestseller ?? false,
+              tag: p.tags?.join(", ") ?? "",
+            }))
+          );
         }
   
         // Seed Settings
