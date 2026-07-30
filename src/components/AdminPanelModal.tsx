@@ -277,7 +277,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     setProdCategory(p.category);
     setProdPrice(p.price.toString());
     setProdDescription(p.description);
-    setProdImage(p.image);
+    setProdImage(p.images?.[0] || '');
     setProdBestseller(!!p.isBestseller);
     setProdIsNew(!!p.isNew);
   };
@@ -288,13 +288,13 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
     try {
       if (editingProduct) {
-        await api.updateProduct(editingProduct.id, {
+        await api.updateProduct(editingProduct._id, {
           title: prodTitle,
           category: prodCategory,
           price: parseFloat(prodPrice) || 1850,
           description: prodDescription,
-          image: prodImage,
-          isBestseller: prodBestseller,
+          images: [prodImage],
+          featured: prodBestseller,
           isNew: prodIsNew,
         });
         setEditingProduct(null);
@@ -304,8 +304,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           category: prodCategory,
           price: parseFloat(prodPrice) || 1850,
           description: prodDescription || 'Handcrafted luxury salon gel press-on set.',
-          image: prodImage,
-          isBestseller: prodBestseller,
+          images: [prodImage],
+          featured: prodBestseller,
           isNew: prodIsNew,
         });
         setIsAddProductOpen(false);
@@ -935,10 +935,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             {/* Product Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {products.map((p) => (
-                <div key={p.id} className="p-3 bg-white rounded-2xl border border-[#800E2B]/15 flex items-center justify-between gap-3 shadow-xs hover:border-[#E91E63]/40 transition-all">
+                <div key={p._id} className="p-3 bg-white rounded-2xl border border-[#800E2B]/15 flex items-center justify-between gap-3 shadow-xs hover:border-[#E91E63]/40 transition-all">
                   <div className="flex items-center gap-3 min-w-0">
                     <img
-                      src={p.image}
+                      src={p.images?.[0] || ''}
                       alt={p.title}
                       className="w-14 h-14 rounded-xl object-cover border border-[#800E2B]/10 shrink-0"
                       referrerPolicy="no-referrer"
@@ -964,7 +964,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                       <Edit className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => handleDeleteProduct(p.id)}
+                      onClick={() => handleDeleteProduct(p._id)}
                       className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
                       title="Remove Product"
                     >
