@@ -311,7 +311,7 @@ const handleProductImageUpload = async (
           price: parseFloat(prodPrice) || 1850,
           description: prodDescription,
           images: [prodImage],
-          isBestseller: prodBestseller,
+          featured: prodBestseller,
           isNew: prodIsNew,
         });
         setEditingProduct(null);
@@ -322,7 +322,7 @@ const handleProductImageUpload = async (
           price: parseFloat(prodPrice) || 1850,
           description: prodDescription || 'Handcrafted luxury salon gel press-on set.',
           images: [prodImage],
-          isBestseller: prodBestseller,
+          featured: prodBestseller,
         });
         setIsAddProductOpen(false);
       }
