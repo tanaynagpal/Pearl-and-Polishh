@@ -21,6 +21,7 @@ export const createProductSchema = z
     category: z.string().trim().min(1, 'Category is required.').default('Luxury Press-On'),
     featured: z.boolean().optional().default(false),
     hidden: z.boolean().optional().default(false),
+    isNew: z.boolean().optional().default(false),
     instagramLink: z
       .string()
       .trim()

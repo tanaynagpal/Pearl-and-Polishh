@@ -101,7 +101,7 @@ export const sanitizeInputs = (req: Request, res: Response, next: NextFunction) 
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 requests per window
+  max: 100, // 5 requests per window
   standardHeaders: true,
   legacyHeaders: false,
   message: {

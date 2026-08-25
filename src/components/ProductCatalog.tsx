@@ -59,17 +59,27 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
   };
 
   const getProductWhatsAppUrl = (product: NailProduct) => {
-    const chosenShape = selectedProductShape[product._id] || (product.shapeOptions ? product.shapeOptions[0] : 'Default');
-    const chosenLength = selectedProductLength[product._id] || (product.lengthOptions ? product.lengthOptions[0] : 'Medium');
+    const chosenShape = selectedProductShape[getProductId(product)] || (product.shapeOptions ? product.shapeOptions[0] : 'Default');
+    const chosenLength = selectedProductLength[getProductId(product)] || (product.lengthOptions ? product.lengthOptions[0] : 'Medium');
 
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-    const productUrl = `${origin}${pathname}?product=${encodeURIComponent(product._id)}`;
+    const productUrl = `${origin}${pathname}?product=${encodeURIComponent(getProductId(product))}`;
 
     const message = `Hello Pearl & Polishh! 💅\n\nI am interested in ordering:\n• Item: ${product.title}\n• Price: ₹${product.price}\n• Shape Choice: ${chosenShape}\n• Length Choice: ${chosenLength}\n• Product Link: ${productUrl}\n\nPlease let me know the estimated delivery and help me confirm my sizes!`;
 
     return buildWhatsAppUrl(message);
   };
+
+
+const getProductId = (product: NailProduct): string => {
+  return product._id || product.id;
+};
+
+const getProductImage = (product: NailProduct): string | undefined => {
+  return product.images?.[0] || product.image || undefined;
+};
+
 
   return (
     <section id="catalog" className="py-20 bg-[#FFF3F6] relative">
@@ -162,24 +172,24 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6 lg:gap-8">
-            {filteredProducts.map((product) => {
+            {filteredProducts.map((product,index) => {
               const currentShape =
-              selectedProductShape[product._id] ||
+              selectedProductShape[getProductId(product)] ||
               (product.shapeOptions ? product.shapeOptions[0] : 'Short Almond');
             
             const currentLength =
-              selectedProductLength[product._id] ||
+              selectedProductLength[getProductId(product)] ||
               (product.lengthOptions ? product.lengthOptions[0] : 'Medium');
 
               return (
                 <div
-                  key={product._id}
+                  key={`${getProductId(product)}-${index}`}
                   className="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-[#800E2B]/15 hover:shadow-xl transition-all duration-300 flex flex-col group"
                 >
                   {/* Image Container */}
                   <div className="relative aspect-square sm:aspect-4/3 overflow-hidden bg-[#FFF3F6]">
                     <img
-                      src={product.images?.[0] || ''}
+                      src={getProductImage(product)}
                       alt={product.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -187,12 +197,12 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
 
                     {/* Badge Overlays */}
                     <div className="absolute top-1.5 left-1.5 sm:top-3 sm:left-3 flex flex-wrap gap-1">
-                      {product.featured && (
+                      {product.features?.includes('Bestseller') && (
                         <span className="bg-[#420614] text-white text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full uppercase tracking-wider border border-[#D4AF37]/50 shadow-xs">
                           Bestseller
                         </span>
                       )}
-                      {product.isNew && (
+                      {product.features?.includes('New') && (
                         <span className="bg-[#E91E63] text-white text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full uppercase tracking-wider shadow-xs">
                           New
                         </span>
@@ -230,7 +240,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                         <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-[#E91E63]">
                           <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-[#E91E63]" />
                           <span className="font-bold">{product.rating}</span>
-                          <span className="text-[#600A20]/50 hidden sm:inline">({product.ratingCount})</span>
+                          <span className="text-[#600A20]/50 hidden sm:inline">({product.reviewCount})</span>
                         </div>
                         <span className="font-serif text-xs sm:text-lg lg:text-2xl font-bold text-[#420614]">
                           ₹{product.price}
@@ -258,7 +268,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                             {product.shapeOptions.slice(0, 3).map((shape) => (
                               <button
                                 key={shape}
-                                onClick={() => handleShapeChange(product._id, shape)}
+                                onClick={() => handleShapeChange(getProductId(product), shape)}
                                 className={`px-1.5 py-0.5 text-[8px] sm:text-[10px] rounded transition-colors cursor-pointer ${
                                   currentShape === shape
                                     ? 'bg-[#420614] text-white font-bold'
@@ -277,7 +287,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({
                             {product.lengthOptions.map((length) => (
                               <button
                                 key={length}
-                                onClick={() => handleLengthChange(product._id, length)}
+                                onClick={() => handleLengthChange(getProductId(product), length)}
                                 className={`px-1.5 py-0.5 text-[8px] sm:text-[10px] rounded transition-colors cursor-pointer ${
                                   currentLength === length
                                     ? 'bg-[#E91E63] text-white font-bold'

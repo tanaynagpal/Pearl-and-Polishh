@@ -41,18 +41,28 @@ const INITIAL_SETTINGS = {
   openingHoursSunday: 'Bridal Appointments Only',
 };
 
+const INITIAL_ADMIN_EMAIL =
+  (process.env.ADMIN_INITIAL_EMAIL || 'admin@pearlandpolish.com')
+    .trim()
+    .toLowerCase();
+
+const INITIAL_ADMIN_PASSWORD =
+  process.env.ADMIN_INITIAL_PASSWORD || 'AdminPassword123!';
+
 const INITIAL_ADMIN = {
   id: 'admin-01',
-  name: 'Maanvi Nagpal (Studio Admin)',
-  email: 'maanvinagpal18@gmail.com',
-  passwordHash: bcrypt.hashSync(process.env.ADMIN_INITIAL_PASSWORD || 'AdminPassword123!', 12),
-  role: 'admin',
-  phone: '+91 98778 85144',
+  name: process.env.ADMIN_INITIAL_NAME || 'Studio Admin',
+  email: INITIAL_ADMIN_EMAIL,
+  passwordHash: bcrypt.hashSync(INITIAL_ADMIN_PASSWORD, 12),
+  role: 'admin' as const,
+  phone: process.env.ADMIN_INITIAL_PHONE || '',
   isVerified: true,
+  failedLoginAttempts: 0,
+  lockUntil: null,
+  isDeleted: false,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
-
 export class Store {
   private static readJSON(): MemoryStoreData {
     try {
@@ -85,66 +95,146 @@ export class Store {
   /**
    * Seed database strictly in DEVELOPMENT environment. Never seeds in production.
    */
-  public static async initSeed() {
-    if (isMongoConnected()) {
-      try {
-        // Seed Admin
-        const adminExists = await UserModel.findOne({
-          email: INITIAL_ADMIN.email.toLowerCase(),
-          isDeleted: { $ne: true },
+ public static async initSeed() {
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  const shouldResetAdmin =
+    isDevelopment && process.env.ADMIN_RESET_ON_START === 'true';
+
+  // ============================================================
+  // MONGODB STORE
+  // ============================================================
+  if (isMongoConnected()) {
+    try {
+      const adminEmail = INITIAL_ADMIN.email.toLowerCase();
+
+      const adminExists = await UserModel.findOne({
+        email: adminEmail,
+        isDeleted: { $ne: true },
+      });
+
+      if (!adminExists) {
+        // Create initial admin
+        await UserModel.create({
+          name: INITIAL_ADMIN.name,
+          email: adminEmail,
+          passwordHash: INITIAL_ADMIN.passwordHash,
+          role: 'admin',
+          phone: INITIAL_ADMIN.phone,
+          isVerified: true,
+          failedLoginAttempts: 0,
+          lockUntil: null,
         });
-  
-        if (!adminExists) {
-          await UserModel.create({
-            name: INITIAL_ADMIN.name,
-            email: INITIAL_ADMIN.email.toLowerCase(),
-            passwordHash: INITIAL_ADMIN.passwordHash,
-            role: 'admin',
-            phone: INITIAL_ADMIN.phone,
-            isVerified: true,
-          });
+
+        console.log(`[ADMIN] Created admin account: ${adminEmail}`);
+      } else {
+        // Always make sure this configured account is an admin.
+        const updateData: any = {
+          role: 'admin',
+          isVerified: true,
+          failedLoginAttempts: 0,
+          lockUntil: null,
+          isDeleted: false,
+        };
+
+        // IMPORTANT:
+        // Only reset the password when explicitly enabled.
+        if (shouldResetAdmin) {
+          updateData.passwordHash = INITIAL_ADMIN.passwordHash;
+          console.log(`[ADMIN] Password reset for: ${adminEmail}`);
         }
-  
-        // Seed Products ONLY if DB is empty
-        const prodCount = await ProductModel.countDocuments({
-          isDeleted: { $ne: true },
-        });
-  
-        if (prodCount === 0) {
-          await ProductModel.insertMany(
-            INITIAL_PRODUCTS.map((p) => ({
-              title: p.title,
-              price: p.price,
-              description: p.description,
-          
-              // Convert frontend model -> Mongo model
-              images: [p.image],
-          
-              shape: p.shapeOptions?.[0] ?? "Medium Almond",
-              length: p.lengthOptions?.[0] ?? "Medium",
-              size: "Standard",
-          
-              category: p.category,
-              rating: p.rating,
-              ratingCount: p.reviewCount,
-              featured: p.isBestseller ?? false,
-              tag: p.tags?.join(", ") ?? "",
-            }))
-          );
-        }
-  
-        // Seed Settings
-        const settingsCount = await StudioSettingsModel.countDocuments();
-  
-        if (settingsCount === 0) {
-          await StudioSettingsModel.create(INITIAL_SETTINGS);
-        }
-      } catch (err) {
-        console.error(err);
+
+        await UserModel.updateOne(
+          { _id: adminExists._id },
+          { $set: updateData }
+        );
+
+        console.log(`[ADMIN] Admin account ready: ${adminEmail}`);
       }
+
+      // ========================================================
+      // SEED PRODUCTS ONLY IF DATABASE IS EMPTY
+      // ========================================================
+      const prodCount = await ProductModel.countDocuments({
+        isDeleted: { $ne: true },
+      });
+
+      if (prodCount === 0) {
+        await ProductModel.insertMany(
+          INITIAL_PRODUCTS.map((p) => ({
+            title: p.title,
+            price: p.price,
+            description: p.description,
+            images: [p.image],
+            shape: p.shapeOptions?.[0] ?? 'Medium Almond',
+            length: p.lengthOptions?.[0] ?? 'Medium',
+            size: 'Standard',
+            category: p.category,
+            rating: p.rating,
+            ratingCount: p.reviewCount,
+            featured: p.isBestseller ?? false,
+            tag: p.tags?.join(', ') ?? '',
+          }))
+        );
+      }
+
+      // ========================================================
+      // SEED SETTINGS
+      // ========================================================
+      const settingsCount = await StudioSettingsModel.countDocuments();
+
+      if (settingsCount === 0) {
+        await StudioSettingsModel.create(INITIAL_SETTINGS);
+      }
+    } catch (err) {
+      console.error('[SEED ERROR]', err);
     }
+
+    return;
   }
 
+  // ============================================================
+  // LOCAL JSON STORE
+  // ============================================================
+  if (isDevelopment) {
+    const data = this.readJSON();
+
+    const adminIndex = data.users.findIndex(
+      (u) => u.email?.toLowerCase() === INITIAL_ADMIN.email.toLowerCase()
+    );
+
+    if (adminIndex === -1) {
+      data.users.push(INITIAL_ADMIN);
+      this.writeJSON(data);
+
+      console.log(
+        `[ADMIN] Created local admin account: ${INITIAL_ADMIN.email}`
+      );
+    } else {
+      const existingAdmin = data.users[adminIndex];
+
+      existingAdmin.role = 'admin';
+      existingAdmin.isVerified = true;
+      existingAdmin.failedLoginAttempts = 0;
+      existingAdmin.lockUntil = null;
+      existingAdmin.isDeleted = false;
+
+      if (shouldResetAdmin) {
+        existingAdmin.passwordHash = INITIAL_ADMIN.passwordHash;
+
+        console.log(
+          `[ADMIN] Local password reset for: ${INITIAL_ADMIN.email}`
+        );
+      }
+
+      data.users[adminIndex] = existingAdmin;
+      this.writeJSON(data);
+
+      console.log(
+        `[ADMIN] Local admin account ready: ${INITIAL_ADMIN.email}`
+      );
+    }
+  }
+}
 
   // ============================================================================
   // USER OPERATIONS
@@ -386,17 +476,21 @@ export class Store {
         ratingCount: prod.ratingCount ?? 1,
         featured: prod.featured ?? false,
         hidden: prod.hidden ?? false,
+        isNew: prod.isNew ?? false,
       });
     }
     const data = this.readJSON();
     const newProd = {
-      id: 'pp-' + Date.now(),
-      _id: 'pp-' + Date.now(),
-      ...prod,
-      isDeleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  id: 'pp-' + Date.now(),
+  _id: 'pp-' + Date.now(),
+  ...prod,
+  featured: prod.featured ?? false,
+  isNew: prod.isNew ?? false,
+  hidden: prod.hidden ?? false,
+  isDeleted: false,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+};
     data.products.push(newProd);
     this.writeJSON(data);
     return newProd;

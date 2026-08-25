@@ -8,11 +8,13 @@ export type PressOnFinish = 'Glossy Topcoat' | 'Velvety Matte' | 'Glazed Chrome'
 
 export interface NailProduct {
   id: string;
+  _id?: string;
   title: string;
   category: ProductCategory;
   price: number;
   description: string;
   image: string;
+  images?: string[];
   rating: number;
   reviewCount: number;
   isBestseller?: boolean;

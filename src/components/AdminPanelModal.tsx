@@ -117,19 +117,36 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const avatarFileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleProductImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setProdImage(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+const handleProductImageUpload = async (
+  e: React.ChangeEvent<HTMLInputElement>
+) => {
+  const file = e.target.files?.[0];
 
+  if (!file) return;
+
+  try {
+    // Show local preview immediately
+    const previewUrl = URL.createObjectURL(file);
+    setProdImage(previewUrl);
+
+    // Upload the actual file to Cloudinary
+    const cloudinaryUrl = await api.uploadImage(file);
+
+    // Replace temporary preview with permanent Cloudinary URL
+    setProdImage(cloudinaryUrl);
+
+    URL.revokeObjectURL(previewUrl);
+  } catch (error: any) {
+    console.error('Product image upload failed:', error);
+
+    setProdImage('');
+
+    alert(error.message || 'Failed to upload product image.');
+  } finally {
+    // Allow selecting the same file again
+    e.target.value = '';
+  }
+};
   const handleAvatarFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -306,7 +323,6 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           description: prodDescription || 'Handcrafted luxury salon gel press-on set.',
           images: [prodImage],
           featured: prodBestseller,
-          isNew: prodIsNew,
         });
         setIsAddProductOpen(false);
       }
@@ -811,7 +827,11 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                           Selected Image Preview
                         </span>
                         <p className="text-[11px] text-[#420614] truncate font-mono mt-0.5">
-                          {prodImage.startsWith('data:') ? 'Uploaded from Device Gallery / Photos' : prodImage}
+                      {prodImage.startsWith('blob:')
+  ? 'Uploading image...'
+  : prodImage.includes('cloudinary.com')
+    ? 'Uploaded to Cloudinary'
+    : prodImage}
                         </p>
                       </div>
                       <button

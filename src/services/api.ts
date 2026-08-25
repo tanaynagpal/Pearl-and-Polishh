@@ -59,6 +59,26 @@ export const api = {
   // Products
   getProducts: () => fetchAPI<{ success: boolean; products: NailProduct[] }>('/products'),
 
+  uploadImage: async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append('image', file);
+  formData.append('folder', 'pearl_and_polish/products');
+
+  const response = await fetch(`${API_BASE}/upload`, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Image upload failed.');
+  }
+
+  return data.data.url;
+},
+
   createProduct: (product: Partial<NailProduct>) =>
     fetchAPI<{ success: boolean; product: NailProduct }>('/products', {
       method: 'POST',
