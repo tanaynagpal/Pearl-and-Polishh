@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile } from '../types';
 import { api } from '../services/api';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/pearl-polishh-logo.jpeg';
 import { X, User, ShieldCheck, Lock, Mail, Phone, Crown, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 
 interface AuthModalProps {

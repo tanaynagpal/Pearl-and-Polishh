@@ -10,7 +10,7 @@ import {
   StudioService
 } from '../types';
 import { api } from '../services/api';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/pearl-polishh-logo.jpeg';
 import { 
   INITIAL_STUDIO_SETTINGS,
   DEFAULT_STUDIO_SERVICES,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import logoImg from '../assets/logo.jpg';
+import logoImg from '../assets/pearl-polishh-logo.jpeg';
 import { getStoredStudioSettings } from '../data/storage';
 
 interface BrandLogoProps {
@@ -8,7 +8,7 @@ interface BrandLogoProps {
 }
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', lightText = false }) => {
-  const [imgSrc, setImgSrc] = useState<string>(logoImg || '/logo.jpg');
+  const [imgSrc, setImgSrc] = useState<string>(logoImg || '/pearl-polishh-logo.jpeg');
   const [imgError, setImgError] = useState(false);
   const [studioName, setStudioName] = useState('Pearl & Polishh');
 
@@ -24,8 +24,8 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({ size = 'md', lightText = f
   }, []);
 
   const handleImageError = () => {
-    if (imgSrc !== '/logo.jpg') {
-      setImgSrc('/logo.jpg');
+    if (imgSrc !== '/pearl-polishh-logo.jpeg') {
+      setImgSrc('/pearl-polishh-logo.jpeg');
     } else {
       setImgError(true);
     }
