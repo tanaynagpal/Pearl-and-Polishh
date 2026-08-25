@@ -442,7 +442,12 @@ export class Store {
         query = query.skip(skip).limit(options.limit);
       }
 
-      return await query.lean().exec();
+      const products = await query.lean().exec();
+
+      return products.map((product: any) => ({
+        ...product,
+        id: product.id || product._id?.toString(),
+      }));
     }
 
     const data = this.readJSON();

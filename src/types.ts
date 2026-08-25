@@ -18,6 +18,7 @@ export interface NailProduct {
   rating: number;
   reviewCount: number;
   isBestseller?: boolean;
+  featured?: boolean;
   isNew?: boolean;
   lengthOptions: string[];
   shapeOptions: PressOnShape[];
