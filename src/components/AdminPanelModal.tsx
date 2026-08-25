@@ -988,7 +988,7 @@ const handleProductImageUpload = async (
                       <Edit className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => handleDeleteProduct(p.id)}
+                      onClick={() => handleDeleteProduct(p.id || (p as any)._id)}
                       className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
                       title="Remove Product"
                     >
