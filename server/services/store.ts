@@ -98,7 +98,7 @@ export class Store {
  public static async initSeed() {
   const isDevelopment = process.env.NODE_ENV !== 'production';
   const shouldResetAdmin =
-    isDevelopment && process.env.ADMIN_RESET_ON_START === 'true';
+      process.env.ADMIN_RESET_ON_START === 'true';
 
   // ============================================================
   // MONGODB STORE
