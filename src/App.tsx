@@ -265,7 +265,7 @@ export default function App() {
       />
 
       {/* User Dashboard Panel */}
-      {currentUser && (currentUser.role === 'client' || currentUser.role === 'user') && (
+      {currentUser && currentUser.role === 'user' && (
         <UserPanelModal
           isOpen={isUserPanelOpen}
           onClose={() => {

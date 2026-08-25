@@ -110,7 +110,7 @@ export class Store {
       const adminExists = await UserModel.findOne({
         email: adminEmail,
         isDeleted: { $ne: true },
-      });
+      }as any);
 
       if (!adminExists) {
         // Create initial admin
@@ -143,7 +143,7 @@ export class Store {
           console.log(`[ADMIN] Password reset for: ${adminEmail}`);
         }
 
-        await UserModel.updateOne(
+        await (UserModel as any).updateOne(
           { _id: adminExists._id },
           { $set: updateData }
         );
@@ -173,7 +173,7 @@ export class Store {
             ratingCount: p.reviewCount,
             featured: p.isBestseller ?? false,
             tag: p.tags?.join(', ') ?? '',
-          }))
+          })) as any[]
         );
       }
 

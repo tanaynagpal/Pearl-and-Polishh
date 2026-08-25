@@ -56,10 +56,10 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   onCatalogUpdated,
   onUserSwitched,
 }) => {
-  if (!isOpen || !adminUser || adminUser.role !== 'admin') return null;
+  const [activeTab, setActiveTab] = useState<
+    'overview' | 'products' | 'orders' | 'appointments' | 'testimonials' | 'users' | 'settings'
+  >('overview');
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'appointments' | 'testimonials' | 'users' | 'settings'>('overview');
-  
   // Data states
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [appointments, setAppointments] = useState<AppointmentRecord[]>([]);
@@ -305,13 +305,13 @@ const handleProductImageUpload = async (
 
     try {
       if (editingProduct) {
-        await api.updateProduct(editingProduct._id, {
+        await api.updateProduct(editingProduct.id, {
           title: prodTitle,
           category: prodCategory,
           price: parseFloat(prodPrice) || 1850,
           description: prodDescription,
           images: [prodImage],
-          featured: prodBestseller,
+          isBestseller: prodBestseller,
           isNew: prodIsNew,
         });
         setEditingProduct(null);
@@ -322,7 +322,7 @@ const handleProductImageUpload = async (
           price: parseFloat(prodPrice) || 1850,
           description: prodDescription || 'Handcrafted luxury salon gel press-on set.',
           images: [prodImage],
-          featured: prodBestseller,
+          isBestseller: prodBestseller,
         });
         setIsAddProductOpen(false);
       }
@@ -552,6 +552,10 @@ const handleProductImageUpload = async (
   // Calculate Metrics
   const totalRevenue = orders.reduce((acc, o) => acc + o.price, 0);
   const activeOrdersCount = orders.filter(o => o.status === 'Confirmed' || o.status === 'In Crafting').length;
+
+  if (!isOpen || !adminUser || adminUser.role !== 'admin') {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-fade-in">
@@ -955,7 +959,7 @@ const handleProductImageUpload = async (
             {/* Product Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {products.map((p) => (
-                <div key={p._id} className="p-3 bg-white rounded-2xl border border-[#800E2B]/15 flex items-center justify-between gap-3 shadow-xs hover:border-[#E91E63]/40 transition-all">
+                <div key={p.id} className="p-3 bg-white rounded-2xl border border-[#800E2B]/15 flex items-center justify-between gap-3 shadow-xs hover:border-[#E91E63]/40 transition-all">
                   <div className="flex items-center gap-3 min-w-0">
                     <img
                       src={p.images?.[0] || ''}
@@ -984,7 +988,7 @@ const handleProductImageUpload = async (
                       <Edit className="w-3.5 h-3.5" />
                     </button>
                     <button
-                      onClick={() => handleDeleteProduct(p._id)}
+                      onClick={() => handleDeleteProduct(p.id)}
                       className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-colors cursor-pointer"
                       title="Remove Product"
                     >
