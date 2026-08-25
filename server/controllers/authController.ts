@@ -109,10 +109,11 @@ const hashToken = (token: string): string => {
 // --- SECURE COOKIE OPTIONS HELPER ---
 const getCookieBaseOptions = () => {
   const isProd = process.env.NODE_ENV === 'production';
+
   return {
     httpOnly: true,
     secure: isProd,
-    sameSite: (isProd ? 'strict' : 'lax') as 'strict' | 'lax',
+    sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
     path: '/',
   };
 };
