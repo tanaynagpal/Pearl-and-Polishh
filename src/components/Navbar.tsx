@@ -12,6 +12,7 @@ interface NavbarProps {
   onOpenAuthModal: () => void;
   onOpenUserPanel: () => void;
   onOpenAdminPanel: () => void;
+  onLogout: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -22,9 +23,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuthModal,
   onOpenUserPanel,
   onOpenAdminPanel,
+  onLogout,
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,13 +122,61 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span>Admin Panel</span>
               </button>
             ) : (
-              <button
-                onClick={onOpenUserPanel}
-                className="px-3.5 py-2 rounded-full bg-[#FCE4EC] text-[#800E2B] border border-[#E91E63]/40 text-xs font-extrabold tracking-wide hover:bg-[#E91E63] hover:text-white transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
-              >
-                <User className="w-3.5 h-3.5 text-[#E91E63]" />
-                <span>{currentUser.name.split(' ')[0]}'s Account</span>
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setAccountMenuOpen(prev => !prev)}
+                  className="px-3.5 py-2 rounded-full bg-[#FCE4EC] text-[#800E2B] border border-[#E91E63]/40 text-xs font-extrabold tracking-wide hover:bg-[#E91E63] hover:text-white transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                  aria-expanded={accountMenuOpen}
+                  aria-haspopup="menu"
+                >
+                  <User className="w-3.5 h-3.5 text-[#E91E63]" />
+                  <span>{currentUser.name.split(' ')[0]}'s Account</span>
+                  <span className="text-[10px]">{accountMenuOpen ? '▲' : '▼'}</span>
+                </button>
+
+                {accountMenuOpen && (
+                  <div
+                    className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl border border-[#800E2B]/15 shadow-xl overflow-hidden z-[100]"
+                    role="menu"
+                  >
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        onOpenUserPanel();
+                      }}
+                      className="w-full px-4 py-3 text-left text-xs font-bold text-[#420614] hover:bg-[#FFF3F6] transition-colors flex items-center gap-3"
+                      role="menuitem"
+                    >
+                      <User className="w-4 h-4 text-[#E91E63]" />
+                      <span>My Account</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full px-4 py-3 text-left text-xs font-bold text-[#420614] hover:bg-[#FFF3F6] transition-colors flex items-center gap-3 border-t border-[#800E2B]/10"
+                      role="menuitem"
+                    >
+                      <span className="text-base">↪</span>
+                      <span>Switch Account</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="w-full px-4 py-3 text-left text-xs font-bold text-[#B00020] hover:bg-red-50 transition-colors flex items-center gap-3 border-t border-[#800E2B]/10"
+                      role="menuitem"
+                    >
+                      <span className="text-base">↪</span>
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             )
           ) : (
             <button

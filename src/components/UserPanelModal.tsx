@@ -19,8 +19,6 @@ export const UserPanelModal: React.FC<UserPanelModalProps> = ({
   onLogout,
   onOpenAppointmentModal,
 }) => {
-  if (!isOpen || !user) return null;
-
   const [activeTab, setActiveTab] = useState<'sizes' | 'orders' | 'appointments'>('sizes');
   const [isSavedNotice, setIsSavedNotice] = useState(false);
   const [actionNotice, setActionNotice] = useState<{ text: string; type: 'success' | 'info' | 'error' } | null>(null);
@@ -59,7 +57,7 @@ export const UserPanelModal: React.FC<UserPanelModalProps> = ({
 
   // Finger sizes state
   const [sizes, setSizes] = useState<CustomFingerSizes>(
-    user.savedSizes || {
+    user?.savedSizes || {
       leftThumb: 15,
       leftIndex: 12,
       leftMiddle: 13,
@@ -72,6 +70,8 @@ export const UserPanelModal: React.FC<UserPanelModalProps> = ({
       rightPinky: 9,
     }
   );
+
+  if (!isOpen || !user) return null;
 
   const handleSaveSizes = () => {
     setIsSavedNotice(true);

@@ -186,6 +186,7 @@ export default function App() {
           navigate('/client/dashboard');
           setIsUserPanelOpen(true);
         }}
+        onLogout={handleLogout}
         onOpenAdminPanel={() => {
           if (currentUser?.role === 'admin') {
             navigate('/admin/dashboard');
@@ -265,7 +266,7 @@ export default function App() {
       />
 
       {/* User Dashboard Panel */}
-      {currentUser && currentUser.role === 'user' && (
+      {currentUser && currentUser.role !== 'admin' && (
         <UserPanelModal
           isOpen={isUserPanelOpen}
           onClose={() => {
