@@ -1,7 +1,7 @@
 import { UserProfile, StudioSettings, NailProduct } from '../types';
 
 const API_BASE =
-  import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  import.meta.env.VITE_API_URL || '/api';
 
 async function fetchAPI<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const config: RequestInit = {
